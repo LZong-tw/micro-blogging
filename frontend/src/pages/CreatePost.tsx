@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { postsApi } from '../services/api';
@@ -11,6 +11,25 @@ const CreatePost: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();
   const navigate = useNavigate();
+
+  const handleCancel = () => {
+    if (content.trim()) {
+      const confirmed = window.confirm('You have unsaved changes. Are you sure you want to leave? Your draft will be lost.');
+      if (!confirmed) return;
+    }
+    navigate('/');
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !loading) {
+        handleCancel();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [content, loading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,18 +79,22 @@ const CreatePost: React.FC = () => {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             rows={5}
-            maxLength={MAX_CONTENT_LENGTH}
             disabled={loading}
             required
           />
-          <div className="character-count">
-            {content.length}/{MAX_CONTENT_LENGTH}
+          <div className={`character-count ${content.length > 260 ? 'warning' : ''}`}>
+            {content.length} / {MAX_CONTENT_LENGTH} characters
           </div>
         </div>
         
-        <button type="submit" disabled={loading || !content.trim()}>
-          {loading ? 'Posting...' : 'Post'}
-        </button>
+        <div className="button-group">
+          <button type="submit" disabled={loading || !content.trim() || content.length > MAX_CONTENT_LENGTH}>
+            {loading ? 'Posting...' : 'Post'}
+          </button>
+          <button type="button" onClick={handleCancel} disabled={loading} className="cancel-button">
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );

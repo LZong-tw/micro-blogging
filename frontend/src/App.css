@@ -373,6 +373,27 @@ button:disabled {
   margin-top: 0.25rem;
 }
 
+.character-count.warning {
+  color: var(--error-color);
+  font-weight: 600;
+}
+
+.button-group {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.cancel-button {
+  background-color: transparent;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+.cancel-button:hover {
+  background-color: #f5f8fa;
+}
+
 /* Utilities */
 .loading {
   text-align: center;
