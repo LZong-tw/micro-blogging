@@ -401,6 +401,36 @@ button:disabled {
   color: #657786;
 }
 
+.loading-spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  min-height: 200px;
+}
+
+.loading-spinner-container p {
+  margin-top: 1rem;
+  color: #657786;
+  font-size: 1rem;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--border-color);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .error-message {
   background-color: #fde8ee;
   color: var(--error-color);
@@ -427,6 +457,28 @@ button:disabled {
 
 .like-button.liked {
   color: var(--error-color);
+}
+
+/* Share button */
+.share-button {
+  background: none;
+  border: none;
+  color: #657786;
+  padding: 0;
+  font-size: 0.875rem;
+  font-weight: normal;
+}
+
+.share-button:hover {
+  color: var(--primary-color);
+  background: none;
+}
+
+/* Post actions container */
+.post-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* Follow button */

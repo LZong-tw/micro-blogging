@@ -117,11 +117,17 @@ const Feed: React.FC = () => {
           
           {error && <div className="error-message">{error}</div>}
           
-          <div className="posts-list">
-            {posts.length === 0 && !loading ? (
-              <p>No posts yet. Be the first to post!</p>
-            ) : (
-              posts.map((post, index) => {
+          {loading && posts.length === 0 ? (
+            <div className="loading-spinner-container">
+              <div className="spinner"></div>
+              <p>Loading posts...</p>
+            </div>
+          ) : (
+            <div className="posts-list">
+              {posts.length === 0 ? (
+                <p>No posts yet. Be the first to post!</p>
+              ) : (
+                posts.map((post, index) => {
                 if (posts.length === index + 1) {
                   return (
                     <div 
@@ -137,13 +143,18 @@ const Feed: React.FC = () => {
                       </div>
                       <div className="post-content">{post.content}</div>
                       <div className="post-footer">
-                        <button 
-                          onClick={() => handleLike(post.id)} 
-                          className={`like-button ${post.liked ? 'liked' : ''}`}
-                          disabled={post.liked}
-                        >
-                          {post.likesCount} {post.likesCount === 1 ? 'Like' : 'Likes'}
-                        </button>
+                        <div className="post-actions">
+                          <button 
+                            onClick={() => handleLike(post.id)} 
+                            className={`like-button ${post.liked ? 'liked' : ''}`}
+                            disabled={post.liked}
+                          >
+                            {post.likesCount} {post.likesCount === 1 ? 'Like' : 'Likes'}
+                          </button>
+                          <button className="share-button">
+                            Share
+                          </button>
+                        </div>
                         <span>{post.commentsCount} {post.commentsCount === 1 ? 'Comment' : 'Comments'}</span>
                       </div>
                     </div>
@@ -159,23 +170,29 @@ const Feed: React.FC = () => {
                       </div>
                       <div className="post-content">{post.content}</div>
                       <div className="post-footer">
-                        <button 
-                          onClick={() => handleLike(post.id)} 
-                          className={`like-button ${post.liked ? 'liked' : ''}`}
-                          disabled={post.liked}
-                        >
-                          {post.likesCount} {post.likesCount === 1 ? 'Like' : 'Likes'}
-                        </button>
+                        <div className="post-actions">
+                          <button 
+                            onClick={() => handleLike(post.id)} 
+                            className={`like-button ${post.liked ? 'liked' : ''}`}
+                            disabled={post.liked}
+                          >
+                            {post.likesCount} {post.likesCount === 1 ? 'Like' : 'Likes'}
+                          </button>
+                          <button className="share-button">
+                            Share
+                          </button>
+                        </div>
                         <span>{post.commentsCount} {post.commentsCount === 1 ? 'Comment' : 'Comments'}</span>
                       </div>
                     </div>
                   );
                 }
               })
-            )}
-          </div>
+              )}
+            </div>
+          )}
           
-          {loading && <div className="loading">Loading posts...</div>}
+          {loading && posts.length > 0 && <div className="loading">Loading more posts...</div>}
         </div>
       </div>
       
