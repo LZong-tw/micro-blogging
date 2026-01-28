@@ -3,7 +3,7 @@ import { Post } from '../types/post';
 import { Comment } from '../types/comment';
 
 // Use environment variable for API URL
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL?.replace(/\/$/, '') || '';
 
 // Log the API URL to help with debugging
 console.log('API URL being used:', API_URL);
