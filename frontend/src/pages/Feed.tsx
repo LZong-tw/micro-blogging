@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import { Post } from '../types/post';
 import { postsApi, usersApi } from '../services/api';
+import CommentSection from '../components/CommentSection';
 
 const Feed: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -12,18 +13,8 @@ const Feed: React.FC = () => {
   const [sortBy, setSortBy] = useState<'newest' | 'popular'>('newest');
   const { token } = useAuth();
   const observer = useRef<IntersectionObserver | null>(null);
-  const lastPostElementRef = useCallback((node: HTMLDivElement | null) => {
-    if (loading) return;
-    if (observer.current) observer.current.disconnect();
-    observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && nextToken) {
-        fetchPosts(nextToken);
-      }
-    });
-    if (node) observer.current.observe(node);
-  }, [loading, nextToken]);
 
-  const fetchPosts = async (nextToken?: string | null) => {
+  const fetchPosts = useCallback(async (nextToken?: string | null) => {
     if (!token) return;
     
     try {
@@ -57,7 +48,18 @@ const Feed: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token, sortBy]);
+
+  const lastPostElementRef = useCallback((node: HTMLDivElement | null) => {
+    if (loading) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && nextToken) {
+        fetchPosts(nextToken);
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [loading, nextToken, fetchPosts]);
 
   useEffect(() => {
     if (token) {
@@ -65,7 +67,7 @@ const Feed: React.FC = () => {
       setNextToken(null);
       fetchPosts();
     }
-  }, [token, sortBy]);
+  }, [token, sortBy, fetchPosts]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -157,6 +159,7 @@ const Feed: React.FC = () => {
                         </div>
                         <span>{post.commentsCount} {post.commentsCount === 1 ? 'Comment' : 'Comments'}</span>
                       </div>
+                      <CommentSection postId={post.id} initialCommentCount={post.commentsCount} />
                     </div>
                   );
                 } else {
@@ -184,6 +187,7 @@ const Feed: React.FC = () => {
                         </div>
                         <span>{post.commentsCount} {post.commentsCount === 1 ? 'Comment' : 'Comments'}</span>
                       </div>
+                      <CommentSection postId={post.id} initialCommentCount={post.commentsCount} />
                     </div>
                   );
                 }

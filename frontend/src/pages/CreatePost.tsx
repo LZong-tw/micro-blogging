@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { postsApi } from '../services/api';
@@ -12,13 +12,13 @@ const CreatePost: React.FC = () => {
   const { token } = useAuth();
   const navigate = useNavigate();
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     if (content.trim()) {
       const confirmed = window.confirm('You have unsaved changes. Are you sure you want to leave? Your draft will be lost.');
       if (!confirmed) return;
     }
     navigate('/');
-  };
+  }, [content, navigate]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -29,7 +29,7 @@ const CreatePost: React.FC = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [content, loading]);
+  }, [content, loading, handleCancel]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

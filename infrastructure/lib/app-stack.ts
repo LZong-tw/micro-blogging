@@ -295,6 +295,28 @@ export class AppStack extends cdk.Stack {
       }
     });
 
+    // Lambda function for creating comments
+    const createCommentFunction = new lambda.Function(this, 'CreateCommentFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'createComment.handler',
+      code: lambda.Code.fromAsset(getLambdaPackagePath('createComment')),
+      environment: {
+        COMMENTS_TABLE_NAME: this.commentsTable.tableName,
+        USERS_TABLE_NAME: this.usersTable.tableName
+      }
+    });
+
+    // Lambda function for getting comments
+    const getCommentsFunction = new lambda.Function(this, 'GetCommentsFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'getComments.handler',
+      code: lambda.Code.fromAsset(getLambdaPackagePath('getComments')),
+      environment: {
+        COMMENTS_TABLE_NAME: this.commentsTable.tableName,
+        USERS_TABLE_NAME: this.usersTable.tableName
+      }
+    });
+
 
 
     // Grant permissions to Lambda functions
@@ -317,6 +339,10 @@ export class AppStack extends cdk.Stack {
     this.postsTable.grantReadData(getPostsFunction);
     this.postsTable.grantReadWriteData(likePostFunction);
     this.likesTable.grantReadWriteData(likePostFunction);
+    this.commentsTable.grantWriteData(createCommentFunction);
+    this.usersTable.grantReadData(createCommentFunction);
+    this.commentsTable.grantReadData(getCommentsFunction);
+    this.usersTable.grantReadData(getCommentsFunction);
 
     // API Gateway endpoints
     const auth = this.api.root.addResource('auth');
@@ -351,6 +377,10 @@ export class AppStack extends cdk.Stack {
     const postId = posts.addResource('{postId}');
     const likePost = postId.addResource('like');
     likePost.addMethod('POST', new apigateway.LambdaIntegration(likePostFunction));
+
+    const comments = postId.addResource('comments');
+    comments.addMethod('POST', new apigateway.LambdaIntegration(createCommentFunction));
+    comments.addMethod('GET', new apigateway.LambdaIntegration(getCommentsFunction));
 
     // S3 bucket for frontend hosting
     this.websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {

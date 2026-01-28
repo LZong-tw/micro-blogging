@@ -1,5 +1,6 @@
 import { User } from '../types/user';
 import { Post } from '../types/post';
+import { Comment } from '../types/comment';
 
 // Use environment variable for API URL
 const API_URL = import.meta.env.VITE_API_URL;
@@ -18,7 +19,7 @@ const handleResponse = async (response: Response) => {
 
 // Auth API calls
 export const authApi = {
-  register: async (username: string, email: string, password: string, displayName: string): Promise<any> => {
+  register: async (username: string, email: string, password: string, displayName: string): Promise<{ message: string }> => {
     console.log(`Making registration request to: ${API_URL}/auth/register`);
     const response = await fetch(`${API_URL}/auth/register`, {
       method: 'POST',
@@ -68,7 +69,7 @@ export const usersApi = {
     return handleResponse(response);
   },
 
-  followUser: async (userId: string, token: string): Promise<any> => {
+  followUser: async (userId: string, token: string): Promise<{ message: string }> => {
     console.log(`Making followUser request to: ${API_URL}/users/${userId}/follow`);
     const response = await fetch(`${API_URL}/users/${userId}/follow`, {
       method: 'POST',
@@ -79,7 +80,7 @@ export const usersApi = {
     return handleResponse(response);
   },
 
-  unfollowUser: async (userId: string, token: string): Promise<any> => {
+  unfollowUser: async (userId: string, token: string): Promise<{ message: string }> => {
     console.log(`Making unfollowUser request to: ${API_URL}/users/${userId}/unfollow`);
     const response = await fetch(`${API_URL}/users/${userId}/unfollow`, {
       method: 'POST',
@@ -163,7 +164,7 @@ export const postsApi = {
     return handleResponse(response);
   },
 
-  deletePost: async (postId: string, token: string): Promise<any> => {
+  deletePost: async (postId: string, token: string): Promise<{ message: string }> => {
     console.log(`Making deletePost request to: ${API_URL}/posts/${postId}`);
     const response = await fetch(`${API_URL}/posts/${postId}`, {
       method: 'DELETE',
@@ -174,7 +175,7 @@ export const postsApi = {
     return handleResponse(response);
   },
 
-  likePost: async (postId: string, token: string): Promise<any> => {
+  likePost: async (postId: string, token: string): Promise<{ message: string }> => {
     console.log(`Making likePost request to: ${API_URL}/posts/${postId}/like`);
     const response = await fetch(`${API_URL}/posts/${postId}/like`, {
       method: 'POST',
@@ -185,13 +186,51 @@ export const postsApi = {
     return handleResponse(response);
   },
 
-  unlikePost: async (postId: string, token: string): Promise<any> => {
+  unlikePost: async (postId: string, token: string): Promise<{ message: string }> => {
     console.log(`Making unlikePost request to: ${API_URL}/posts/${postId}/unlike`);
     const response = await fetch(`${API_URL}/posts/${postId}/unlike`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
       },
+    });
+    return handleResponse(response);
+  },
+};
+
+// Comments API calls
+export const commentsApi = {
+  getComments: async (
+    postId: string,
+    token: string,
+    options: {
+      limit?: number;
+      lastKey?: string;
+    } = {}
+  ): Promise<{ comments: Comment[]; lastKey: string | null }> => {
+    const { limit = 50, lastKey } = options;
+    
+    let url = `${API_URL}/posts/${postId}/comments?limit=${limit}`;
+    if (lastKey) url += `&lastKey=${encodeURIComponent(lastKey)}`;
+    
+    console.log(`Making getComments request to: ${url}`);
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return handleResponse(response);
+  },
+
+  createComment: async (postId: string, text: string, token: string): Promise<Comment> => {
+    console.log(`Making createComment request to: ${API_URL}/posts/${postId}/comments`);
+    const response = await fetch(`${API_URL}/posts/${postId}/comments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ postId, text }),
     });
     return handleResponse(response);
   },

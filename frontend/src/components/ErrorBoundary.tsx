@@ -38,7 +38,7 @@ class ErrorBoundary extends Component<Props, State> {
    * Static lifecycle method called when a descendant component throws an error.
    * Updates state to trigger fallback UI rendering.
    */
-  public static getDerivedStateFromError(_: Error): State {
+  public static getDerivedStateFromError(): State {
     return { hasError: true };
   }
 
