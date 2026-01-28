@@ -176,7 +176,7 @@ This implementation plan breaks down the post comments feature into discrete cod
     - Verify validation error appears
     - _Requirements: 1.2, 1.3_
   
-  - [x] 9.3 Write E2E test for comment display
+  - [ ] 9.3 Write E2E test for comment display
     - User views post with multiple comments
     - Verify all comments are visible
     - Verify comments are in chronological order
