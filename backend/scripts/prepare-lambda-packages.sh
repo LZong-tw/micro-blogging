@@ -81,4 +81,9 @@ for func in ./src/functions/posts/*.js; do
     prepare_package $func
 done
 
+# Prepare packages for comment functions
+for func in ./src/functions/comments/*.js; do
+    prepare_package $func
+done
+
 echo "All Lambda packages prepared successfully in $TEMP_DIR"
