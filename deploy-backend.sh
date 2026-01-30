@@ -48,6 +48,7 @@ npm run build
 # Deploy backend infrastructure using CDK
 echo "🏗️ Deploying backend infrastructure..."
 
+export AWS_REGION=us-east-1
 # Bootstrap CDK environment (idempotent - safe to run multiple times)
 echo "🔧 Ensuring CDK environment is bootstrapped..."
 cdk bootstrap
